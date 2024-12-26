@@ -22,7 +22,7 @@ First add this to your Cargo.toml file
 
 ```toml
 [dependencies]
-machineid-rs = "1.2.4"
+machineid-rs = { git = "https://github.com/Crystal-Server/machineid-rs.git" }
 ```
 
 Then, you need to define the builder variable with the encryption type you want.
@@ -40,19 +40,19 @@ After that, you just need to add the components you want the id to have.
 The available components are:
 
 - **System UUID**: Unique identifier of your machine
-  
+
 - **CPU Cores**: Number of physical cores from your computer
-  
+
 - **OS Name**: Operative System name, i.e., linux/windows
-  
+
 - **Username**: The username currently being used
-  
+
 - **Machine Name**: The name of the machine
-  
+
 - **CPU ID**: The serial number of the processor
-  
+
 - **Drive Serial** : The serial number of the disk storing the OS.
-  
+
 For example, i will add the System UUID and CPU Cores
 ```rust
 use machineid_rs::HWIDComponent;
@@ -69,5 +69,5 @@ let hwid = builder.build("mykey").unwrap();
 ### Todo
 
 - Optimize the code
-  
+
 *Feel free to report any bug you find! ;)*
