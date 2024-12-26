@@ -32,9 +32,11 @@ use windows::{get_disk_id, get_hwid, get_mac_address};
 
 use hmac::{Hmac, Mac};
 use md5::{Digest as Md5Digest, Md5};
+#[allow(unused_imports)]
 use sha1::{Digest as Sha1Digest, Sha1};
+#[allow(unused_imports)]
 use sha2::{Digest as Sha256Digest, Sha256};
-use sysinfo::{CpuExt, System, SystemExt};
+use sysinfo::{CpuRefreshKind, RefreshKind, System};
 use utils::file_token;
 
 /// The components that can be used to build the HWID.
@@ -62,35 +64,40 @@ pub enum HWIDComponent {
 }
 
 impl HWIDComponent {
-    fn to_string(&self) -> Result<String, HWIDError> {
+    pub fn to_string(&self) -> Result<String, HWIDError> {
         use HWIDComponent::*;
 
         match self {
             SystemID => get_hwid(),
             CPUCores => {
-                let sys = System::new_all();
-                let cores = sys.physical_core_count().unwrap_or(2);
+                let sys = System::new_with_specifics(
+                    RefreshKind::nothing().with_cpu(CpuRefreshKind::nothing()),
+                );
+                let cores = sys
+                    .physical_core_count()
+                    .ok_or(HWIDError::new("CPUCores", "Could not retrieve CPU Cores"))?;
                 Ok(cores.to_string())
             }
             OSName => {
-                let sys = System::new_all();
-                let name = sys
-                    .long_os_version()
+                let name = System::long_os_version()
                     .ok_or(HWIDError::new("OSName", "Could not retrieve OS Name"))?;
                 Ok(name)
             }
             Username => Ok(whoami::username()),
             MachineName => {
-                let sys = System::new_all();
-                let name = sys
-                    .host_name()
+                let name = System::host_name()
                     .ok_or(HWIDError::new("HostName", "Could not retrieve Host Name"))?;
                 Ok(name)
             }
             MacAddress => get_mac_address(),
             CPUID => {
-                let sys = System::new_all();
-                let processor = sys.global_cpu_info();
+                let sys = System::new_with_specifics(
+                    RefreshKind::nothing().with_cpu(CpuRefreshKind::nothing()),
+                );
+                let processor = sys
+                    .cpus()
+                    .first()
+                    .ok_or(HWIDError::new("CPUID", "Could not retrieve CPU ID"))?;
                 Ok(processor.vendor_id().to_string())
             }
             FileToken(filename) => file_token(filename),
@@ -117,7 +124,7 @@ impl Encryption {
                 if key.is_none() {
                     let mut hasher = Md5::new();
                     hasher.update(text.as_bytes());
-                    Ok(hex::encode(hasher.finalize().to_vec()))
+                    Ok(hex::encode(hasher.finalize()))
                 } else {
                     let mut mac = HmacMd5::new_from_slice(key.unwrap())?;
                     mac.update(text.as_bytes());
@@ -129,7 +136,7 @@ impl Encryption {
                 if key.is_none() {
                     let mut hasher = Sha1::new();
                     hasher.update(text.as_bytes());
-                    Ok(hex::encode(hasher.finalize().to_vec()))
+                    Ok(hex::encode(hasher.finalize()))
                 } else {
                     let mut mac = HmacSha1::new_from_slice(key.unwrap())?;
                     mac.update(text.as_bytes());
@@ -141,7 +148,7 @@ impl Encryption {
                 if key.is_none() {
                     let mut hasher = Sha256::new();
                     hasher.update(text.as_bytes());
-                    Ok(hex::encode(hasher.finalize().to_vec()))
+                    Ok(hex::encode(hasher.finalize()))
                 } else {
                     let mut mac = HmacSha256::new_from_slice(key.unwrap())?;
                     mac.update(text.as_bytes());
@@ -180,7 +187,7 @@ impl IdBuilder {
     /// let key = builder.build(Some("mykey")).unwrap();
     /// ```
     pub fn build(&mut self, key: Option<&str>) -> Result<String, HWIDError> {
-        if self.parts.len() == 0 {
+        if self.parts.is_empty() {
             panic!("You must add at least one element to make a machine id");
         }
         let final_string = self
@@ -210,7 +217,7 @@ impl IdBuilder {
         if !self.parts.contains(&component) {
             self.parts.push(component);
         }
-        return self;
+        self
     }
 
     /// Adds all possible components to the `IdBuilder`.

@@ -8,6 +8,7 @@ pub(crate) fn file_token(path: &str) -> Result<String, HWIDError> {
         .write(true)
         .read(true)
         .create(true)
+        .truncate(false)
         .open(path)?;
     let mut content = String::new();
     file.read_to_string(&mut content)?;
@@ -16,5 +17,5 @@ pub(crate) fn file_token(path: &str) -> Result<String, HWIDError> {
         file.write_all(uuid.as_bytes()).unwrap();
         content = uuid.to_string();
     }
-    return Ok(content);
+    Ok(content)
 }

@@ -90,7 +90,7 @@ fn run_command(command: &str) -> Result<String, HWIDError> {
     if !cmd.status()?.success() {
         return Err(HWIDError::new(
             &format!("Failed to run command: {command}"),
-            &String::from_utf8(output.stderr.into())?,
+            &String::from_utf8(output.stderr)?,
         ));
     }
 
