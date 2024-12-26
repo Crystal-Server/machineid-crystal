@@ -1,17 +1,10 @@
-[![Check, build and deploy!](https://github.com/Taptiive/machineid-rs/actions/workflows/action.yml/badge.svg)](https://github.com/Taptiive/machineid-rs/actions/workflows/action.yml)
-<a href="https://crates.io/crates/machineid-rs"><img src="https://img.shields.io/crates/v/machineid-rs?style=for-the-badge&logo=rust&color=orange" /></a>
-<a href="https://docs.rs/machineid-rs/latest/machineid_rs/">
-    <img src="https://img.shields.io/badge/docs-latest-blue.svg?style=for-the-badge&logo=rust&color=blue"
-      alt="docs.rs docs" />
-</a>
-
 ## MachineID for Rust - Like .Net DeviceId
 
 This Rust package is inspired by [DeviceId](https://github.com/MatthewKing/DeviceId), a .Net package to build a unique Machine ID.
 
 ### Features
 
-- 3 Different types of hash (*MD5*, *SHA1*, *SHA256*)
+- 3 Different hashing types (*MD5*, *SHA1*, *SHA256*)
 - Different components to make the ID
 - Support for Windows, Linux and MacOS
 - No Admin privileges are required
@@ -25,13 +18,13 @@ First add this to your Cargo.toml file
 machineid-rs = { git = "https://github.com/Crystal-Server/machineid-rs.git" }
 ```
 
-Then, you need to define the builder variable with the encryption type you want.
+Then, you need to define the builder variable with the hashing type you want.
 
 For example, **SHA256**
 ```rust
 use machineid_rs::{IdBuilder, Encryption};
 
-// There are 3 different encryption types: MD5, SHA1 and SHA256.
+// There are 3 different hashing types: MD5, SHA1 and SHA256.
 let mut builder = IdBuilder::new(Encryption::SHA256);
 ```
 
@@ -69,5 +62,6 @@ let hwid = builder.build("mykey").unwrap();
 ### Todo
 
 - Optimize the code
+- Fix bugs and increase platform integration/stability
 
 *Feel free to report any bug you find! ;)*
