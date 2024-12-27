@@ -3,9 +3,7 @@ use crate::errors::HWIDError;
 #[cfg(target_os = "linux")]
 use serde::Deserialize;
 #[cfg(target_os = "linux")]
-use std::fs::File;
-#[cfg(target_os = "linux")]
-use std::{io::Read, process::Command};
+use std::process::Command;
 
 #[cfg(target_os = "linux")]
 const MACHINE_ID_FILES: [&str; 2] = ["/var/lib/dbus/machine-id", "/etc/machine-id"];
@@ -83,18 +81,24 @@ pub(crate) fn get_disk_id() -> Result<String, HWIDError> {
 
 #[cfg(target_os = "linux")]
 fn run_command(command: &str) -> Result<String, HWIDError> {
+    use std::process::Stdio;
+
     let mut cmd = Command::new("sh");
-    let cmd = cmd.arg("-c").arg(command);
+    let cmd = cmd
+        .arg("-c")
+        .arg(command)
+        .stderr(Stdio::piped())
+        .stdout(Stdio::piped());
 
     let output = cmd.output()?;
     if !cmd.status()?.success() {
         return Err(HWIDError::new(
             &format!("Failed to run command: {command}"),
-            &String::from_utf8(output.stderr)?,
+            &String::from_utf8_lossy(&output.stderr),
         ));
     }
 
-    Ok(String::from_utf8(cmd.output()?.stdout)?)
+    Ok(String::from_utf8_lossy(&cmd.output()?.stdout).into())
 }
 
 #[cfg(target_os = "linux")]
@@ -133,17 +137,16 @@ pub(crate) fn get_mac_address() -> Result<String, HWIDError> {
     }
 
     // If everything just fails, we get the (first) default network interface
-    get_mac_addressof_interface(&run_command(
-        "ip route show default | awk '/default/ {print $5; exit}'",
-    )?)
+    get_mac_addressof_interface(
+        run_command("ip route show default | awk '/default/ {print $5; exit}'")?.trim(),
+    )
 }
 
 #[cfg(target_os = "linux")]
 fn get_file_content(path: &str) -> Result<String, HWIDError> {
-    let mut file = File::open(path)?;
-    let mut content = String::new();
-    file.read_to_string(&mut content)?;
-    Ok(content)
+    use std::fs;
+
+    Ok(fs::read_to_string(path)?)
 }
 
 #[cfg(target_os = "linux")]

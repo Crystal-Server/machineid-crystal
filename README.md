@@ -1,15 +1,15 @@
-## MachineID for Rust - Like .Net DeviceId
+# MachineID for Rust - Like .Net DeviceId
 
 This Rust package is inspired by [DeviceId](https://github.com/MatthewKing/DeviceId), a .Net package to build a unique Machine ID.
 
-### Features
+## Features
 
 - 3 Different hashing types (*MD5*, *SHA1*, *SHA256*)
 - Different components to make the ID
 - Support for Windows, Linux and MacOS
 - No Admin privileges are required
 
-### How to use
+## How to use
 
 First add this to your Cargo.toml file
 
@@ -59,7 +59,7 @@ Once you are ready, you just need to build the id with your key
 let hwid = builder.build("mykey").unwrap();
 ```
 
-### Todo
+## Todo
 
 - Optimize the code
 - Fix bugs and increase platform integration/stability
