@@ -1,5 +1,6 @@
 # MachineID for Rust - Like .Net DeviceId
 
+This crate is a [fork](https://github.com/jmif/machineid-rs) of the [original](https://github.com/Taptiive/machineid-rs) crate to provide some fixes and maintenance.
 This Rust package is inspired by [DeviceId](https://github.com/MatthewKing/DeviceId), a .Net package to build a unique Machine ID.
 
 ## Features
@@ -15,14 +16,14 @@ First add this to your Cargo.toml file
 
 ```toml
 [dependencies]
-machineid-rs = { git = "https://github.com/Crystal-Server/machineid-rs.git" }
+machineid-crystal = "1.2.5"
 ```
 
 Then, you need to define the builder variable with the hashing type you want.
 
 For example, **SHA256**
 ```rust
-use machineid_rs::{IdBuilder, Encryption};
+use machineid_crystal::{IdBuilder, Encryption};
 
 // There are 3 different hashing types: MD5, SHA1 and SHA256.
 let mut builder = IdBuilder::new(Encryption::SHA256);
@@ -48,7 +49,7 @@ The available components are:
 
 For example, i will add the System UUID and CPU Cores
 ```rust
-use machineid_rs::HWIDComponent;
+use machineid_crystal::HWIDComponent;
 
 builder.add_component(HWIDComponent::SystemID).add_component(HWIDComponent::CPUCores);
 ```

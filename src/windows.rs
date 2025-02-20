@@ -45,7 +45,7 @@ pub(crate) fn get_disk_id() -> Result<String, HWIDError> {
     let con = WMIConnection::new(COM_LIB.with(|con| *con))?;
     let ser: Vec<DiskGeneric> = con.raw_query("SELECT SerialNumber FROM Win32_PhysicalMedia")?;
     let serial = ser
-        .get(0)
+        .first()
         .ok_or(HWIDError::new("UuidError", "Could not retrieve Uuid"))?
         .serial_number
         .clone();
@@ -58,7 +58,7 @@ pub(crate) fn get_mac_address() -> Result<String, HWIDError> {
     let ser: Vec<MACGeneric> =
         con.raw_query("SELECT MACAddress from Win32_NetworkAdapter WHERE MACAddress IS NOT NULL")?;
     Ok(ser
-        .get(0)
+        .first()
         .ok_or(HWIDError::new(
             "MACAddress",
             "Could not retrieve Mac Address",
