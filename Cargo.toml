@@ -1,7 +1,7 @@
 [package]
 name = "machineid-crystal"
 version = "1.2.5"
-edition = "2021"
+edition = "2024"
 authors = ["Taptiive <aalexius912@gmail.com>", "ryi3r <ryi3r@duck.com>"]
 description = "Get an encrypted unique MachineID/HWID/UUID. Inspired by .Net DeviceId."
 readme = "README.md"
@@ -17,7 +17,7 @@ sysinfo = { version = "0.33.1", default-features = false, features = [
     "system",
 ] }
 whoami = "1.5.2"
-serde = { version = "1.0.217", features = ["derive"] }
+serde = { version = "1.0.218", features = ["derive"] }
 hex = "0.4.3"
 uuid = { version = "1.13.2", features = ["v4"] }
 hmac = "0.12.1"

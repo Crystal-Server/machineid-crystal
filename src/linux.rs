@@ -1,20 +1,14 @@
-#[cfg(target_os = "linux")]
 use crate::errors::HWIDError;
-#[cfg(target_os = "linux")]
 use serde::Deserialize;
-#[cfg(target_os = "linux")]
 use std::process::Command;
 
-#[cfg(target_os = "linux")]
 const MACHINE_ID_FILES: [&str; 2] = ["/var/lib/dbus/machine-id", "/etc/machine-id"];
 
-#[cfg(target_os = "linux")]
 #[derive(Deserialize)]
 struct Output {
     blockdevices: Vec<Device>,
 }
 
-#[cfg(target_os = "linux")]
 #[derive(Deserialize)]
 struct Device {
     name: String,
@@ -26,9 +20,7 @@ struct Device {
     uuid: Option<String>,
 }
 
-#[cfg(target_os = "linux")]
 impl Output {
-    #[cfg(target_os = "linux")]
     fn get_root(self) -> Result<String, HWIDError> {
         for devc in self.blockdevices.into_iter() {
             if let Some(mountpoint) = devc.mountpoint {
@@ -69,7 +61,6 @@ impl Output {
     }
 }
 
-#[cfg(target_os = "linux")]
 pub(crate) fn get_disk_id() -> Result<String, HWIDError> {
     let output = run_command("lsblk -f -J -o NAME,MOUNTPOINT,UUID")?;
 
@@ -79,7 +70,6 @@ pub(crate) fn get_disk_id() -> Result<String, HWIDError> {
     Ok(uuid)
 }
 
-#[cfg(target_os = "linux")]
 fn run_command(command: &str) -> Result<String, HWIDError> {
     use std::process::Stdio;
 
@@ -101,12 +91,10 @@ fn run_command(command: &str) -> Result<String, HWIDError> {
     Ok(String::from_utf8_lossy(&cmd.output()?.stdout).into())
 }
 
-#[cfg(target_os = "linux")]
 fn get_mac_addressof_interface(interface_name: &str) -> Result<String, HWIDError> {
     get_file_content(&format!("/sys/class/net/{interface_name}/address"))
 }
 
-#[cfg(target_os = "linux")]
 pub(crate) fn get_mac_address() -> Result<String, HWIDError> {
     // First check for first cable internet interface connected on hardware,
     // if the ethernet cable is not available we find the first wifi interface.
@@ -142,14 +130,12 @@ pub(crate) fn get_mac_address() -> Result<String, HWIDError> {
     )
 }
 
-#[cfg(target_os = "linux")]
 fn get_file_content(path: &str) -> Result<String, HWIDError> {
     use std::fs;
 
     Ok(fs::read_to_string(path)?)
 }
 
-#[cfg(target_os = "linux")]
 pub(crate) fn get_hwid() -> Result<String, HWIDError> {
     for path in MACHINE_ID_FILES.iter() {
         if std::path::Path::new(path).exists() {

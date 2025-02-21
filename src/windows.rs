@@ -1,20 +1,12 @@
-#[cfg(target_os = "windows")]
 use crate::errors::HWIDError;
-#[cfg(target_os = "windows")]
 use serde::Deserialize;
-
-#[cfg(target_os = "windows")]
 use winreg::{enums::HKEY_LOCAL_MACHINE, RegKey};
-
-#[cfg(target_os = "windows")]
 use wmi::{COMLibrary, WMIConnection};
 
 thread_local! {
-    #[cfg(target_os="windows")]
-    static COM_LIB:COMLibrary = COMLibrary::without_security().unwrap();
+    static COM_LIB: COMLibrary = COMLibrary::without_security().unwrap();
 }
 
-#[cfg(target_os = "windows")]
 pub fn get_hwid() -> Result<String, HWIDError> {
     use winreg::enums::{KEY_READ, KEY_WOW64_64KEY};
 
@@ -27,20 +19,17 @@ pub fn get_hwid() -> Result<String, HWIDError> {
     Ok(id)
 }
 
-#[cfg(target_os = "windows")]
 #[derive(Deserialize)]
 #[serde(rename_all = "PascalCase")]
 struct DiskGeneric {
     serial_number: String,
 }
 
-#[cfg(target_os = "windows")]
 #[derive(Deserialize)]
 struct MACGeneric {
     MACAddress: String,
 }
 
-#[cfg(target_os = "windows")]
 pub(crate) fn get_disk_id() -> Result<String, HWIDError> {
     let con = WMIConnection::new(COM_LIB.with(|con| *con))?;
     let ser: Vec<DiskGeneric> = con.raw_query("SELECT SerialNumber FROM Win32_PhysicalMedia")?;
@@ -52,7 +41,6 @@ pub(crate) fn get_disk_id() -> Result<String, HWIDError> {
     Ok(serial)
 }
 
-#[cfg(target_os = "windows")]
 pub(crate) fn get_mac_address() -> Result<String, HWIDError> {
     let con = WMIConnection::new(COM_LIB.with(|con| *con))?;
     let ser: Vec<MACGeneric> =

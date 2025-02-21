@@ -1,9 +1,6 @@
-#[cfg(target_os = "macos")]
 use crate::errors::HWIDError;
-#[cfg(target_os = "macos")]
 use std::{process::Command, str};
 
-#[cfg(target_os = "macos")]
 pub(crate) fn get_hwid() -> Result<String, HWIDError> {
     let output = Command::new("ioreg")
         .arg("-d2")
@@ -39,7 +36,6 @@ pub(crate) fn get_hwid() -> Result<String, HWIDError> {
     ))
 }
 
-#[cfg(target_os = "macos")]
 pub(crate) fn get_mac_address() -> Result<String, HWIDError> {
     let output = Command::new("ifconfig").arg("en0").arg("ether").output()?;
 
@@ -70,7 +66,6 @@ pub(crate) fn get_mac_address() -> Result<String, HWIDError> {
     ))
 }
 
-#[cfg(target_os = "macos")]
 pub(crate) fn get_disk_id() -> Result<String, HWIDError> {
     let output = Command::new("diskutil").arg("info").arg("/").output()?;
 
