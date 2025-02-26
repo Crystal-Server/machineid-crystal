@@ -21,21 +21,21 @@ mod errors;
 mod linux;
 #[cfg(target_os = "macos")]
 mod macos;
-mod utils;
-//#[cfg(not(any(target_os = "windows", target_os = "linux", target_os = "macos")))]
+#[cfg(not(any(target_os = "windows", target_os = "linux", target_os = "macos")))]
 mod unsupported;
-//#[cfg(target_os = "windows")]
-//mod windows;
+mod utils;
+#[cfg(target_os = "windows")]
+mod windows;
 
 use errors::HWIDError;
 #[cfg(target_os = "linux")]
 use linux::{get_disk_id, get_hwid, get_mac_address};
 #[cfg(target_os = "macos")]
 use macos::{get_disk_id, get_hwid, get_mac_address};
-//#[cfg(target_os = "windows")]
-//use windows::{get_disk_id, get_hwid, get_mac_address};
-//#[cfg(not(any(target_os = "windows", target_os = "linux", target_os = "macos")))]
+#[cfg(not(any(target_os = "windows", target_os = "linux", target_os = "macos")))]
 use unsupported::{get_disk_id, get_hwid, get_mac_address};
+#[cfg(target_os = "windows")]
+use windows::{get_disk_id, get_hwid, get_mac_address};
 
 use hmac::{Hmac, Mac};
 use md5::{Digest as Md5Digest, Md5};
